@@ -1,3 +1,4 @@
+using DailyFileLogger.Extensions;
 using Microsoft.OpenApi.Models;
 
 namespace MoneyMinder
@@ -8,6 +9,17 @@ namespace MoneyMinder
         {
             // 建立 WebApplicationBuilder
             var builder = WebApplication.CreateBuilder(args);
+
+            #region 新增Logging使用方式
+            //-------------------------新增Logging註冊方式---------------------------
+            // ← 加這一行，就把自訂檔案 Logger 註冊進去
+            builder.Logging.ClearProviders();         // 如果只想要檔案 Log，可先清掉預設
+            builder.Logging.AddDailyFileLogger();      // 呼叫剛才的擴充方法
+            // 如果你想保留 Console/Debug，也可以這樣：
+            builder.Logging.AddConsole();
+            builder.Logging.AddDebug();
+            //-------------------------新增Logging註冊方式---------------------------
+            #endregion
 
             #region 服務註冊 (Service Registration)
             // 註冊 MVC 控制器與視圖服務
