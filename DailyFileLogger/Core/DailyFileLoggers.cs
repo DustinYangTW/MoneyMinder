@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using QueueLibrary.Core;
 
 namespace DailyFileLogger.Core
 {
@@ -10,12 +11,13 @@ namespace DailyFileLogger.Core
     {
         private readonly string _categoryName;
         private readonly IHostEnvironment _env;
-        private static readonly object _fileLock = new object();
+        private readonly OperationQueue _queue;
 
-        public DailyFileLoggers(string categoryName, IHostEnvironment env)
+        public DailyFileLoggers(string categoryName, IHostEnvironment env, OperationQueue queue)
         {
             _categoryName = categoryName;
             _env = env;
+            _queue = queue;
         }
 
         /// <summary>
@@ -76,13 +78,13 @@ namespace DailyFileLogger.Core
             );
             var logFile = Path.Combine(logDir, DateTime.Now.ToString("yyyy-MM-dd") + ".log");
 
-            lock (_fileLock)
+            _ = _queue.EnqueueAsync(async () =>
             {
                 if (!Directory.Exists(logDir))
                     Directory.CreateDirectory(logDir);
 
-                File.AppendAllText(logFile, logLine + Environment.NewLine);
-            }
+                await File.AppendAllTextAsync(logFile, logLine + Environment.NewLine);
+            });
         }
     }
 }
