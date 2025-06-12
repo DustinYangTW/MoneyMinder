@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DailyFileLogger\DailyFileLogger.csproj" />
+    <ProjectReference Include="..\QueueLibrary\QueueLibrary.csproj" />
   </ItemGroup>
 
 </Project>
