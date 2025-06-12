@@ -7,40 +7,42 @@ namespace MoneyMinder
     {
         public static void Main(string[] args)
         {
-            // «Ø¥ß WebApplicationBuilder
+            // å»ºç«‹ WebApplicationBuilder
             var builder = WebApplication.CreateBuilder(args);
+            // Register custom services
+            builder.Services.AddTransient<MoneyMinder.Services.ILogService, MoneyMinder.Services.LogService>();
 
-            #region ·s¼WLogging¨Ï¥Î¤è¦¡
-            //-------------------------·s¼WLoggingµù¥U¤è¦¡---------------------------
-            // ¡ö ¥[³o¤@¦æ¡A´N§â¦Û­qÀÉ®× Logger µù¥U¶i¥h
-            builder.Logging.ClearProviders();         // ¦pªG¥u·Q­nÀÉ®× Log¡A¥i¥ı²M±¼¹w³]
-            builder.Logging.AddDailyFileLogger();      // ©I¥s­è¤~ªºÂX¥R¤èªk
-            // ¦pªG§A·Q«O¯d Console/Debug¡A¤]¥i¥H³o¼Ë¡G
+            #region æ–°å¢Loggingä½¿ç”¨æ–¹å¼
+            //-------------------------æ–°å¢Loggingè¨»å†Šæ–¹å¼---------------------------
+            // â† åŠ é€™ä¸€è¡Œï¼Œå°±æŠŠè‡ªè¨‚æª”æ¡ˆ Logger è¨»å†Šé€²å»
+            builder.Logging.ClearProviders();         // å¦‚æœåªæƒ³è¦æª”æ¡ˆ Logï¼Œå¯å…ˆæ¸…æ‰é è¨­
+            builder.Logging.AddDailyFileLogger();      // å‘¼å«å‰›æ‰çš„æ“´å……æ–¹æ³•
+            // å¦‚æœä½ æƒ³ä¿ç•™ Console/Debugï¼Œä¹Ÿå¯ä»¥é€™æ¨£ï¼š
             builder.Logging.AddConsole();
             builder.Logging.AddDebug();
-            //-------------------------·s¼WLoggingµù¥U¤è¦¡---------------------------
+            //-------------------------æ–°å¢Loggingè¨»å†Šæ–¹å¼---------------------------
             #endregion
 
-            #region ªA°Èµù¥U (Service Registration)
-            // µù¥U MVC ±±¨î¾¹»Pµø¹ÏªA°È
+            #region æœå‹™è¨»å†Š (Service Registration)
+            // è¨»å†Š MVC æ§åˆ¶å™¨èˆ‡è¦–åœ–æœå‹™
             builder.Services.AddControllersWithViews();
 
-            // ±Ò¥ÎºİÂI API ±´¯Á (¾A¥Î©ó minimal APIs »P Swagger)
+            // å•Ÿç”¨ç«¯é» API æ¢ç´¢ (é©ç”¨æ–¼ minimal APIs èˆ‡ Swagger)
             builder.Services.AddEndpointsApiExplorer();
 
-            // µù¥U¨Ã³]©w Swagger ¤å¥ó¥Í¦¨¾¹
+            // è¨»å†Šä¸¦è¨­å®š Swagger æ–‡ä»¶ç”Ÿæˆå™¨
             builder.Services.AddSwaggerGen(c =>
             {
-                // ©w¸q Swagger ¤å¥ó¸ê°T
+                // å®šç¾© Swagger æ–‡ä»¶è³‡è¨Š
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MoneyMinder", Version = "v1" });
 
-                // ¸ü¤J·í«e±M®×ªº XML µù¸ÑÀÉ
+                // è¼‰å…¥ç•¶å‰å°ˆæ¡ˆçš„ XML è¨»è§£æª”
                 var baseXmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var baseXmlPath = Path.Combine(AppContext.BaseDirectory, baseXmlFile);
                 c.IncludeXmlComments(baseXmlPath, includeControllerXmlComments: true);
 
-                // ¸ü¤JÃB¥~Ãş§O®wªº XML µù¸Ñ¡]­Y¦³¡^
-                var externalAssemblies = new[] { ""/* ¶ñ¤J¥~³¡²Õ¥ó¦WºÙ */ };
+                // è¼‰å…¥é¡å¤–é¡åˆ¥åº«çš„ XML è¨»è§£ï¼ˆè‹¥æœ‰ï¼‰
+                var externalAssemblies = new[] { ""/* å¡«å…¥å¤–éƒ¨çµ„ä»¶åç¨± */ };
                 foreach (var assemblyName in externalAssemblies)
                 {
                     var xmlFile = $"{assemblyName}.xml";
@@ -53,46 +55,46 @@ namespace MoneyMinder
             });
             #endregion
 
-            // «Ø¥ß Web À³¥Îµ{¦¡
+            // å»ºç«‹ Web æ‡‰ç”¨ç¨‹å¼
             var app = builder.Build();
 
-            #region ¤¤¤¶³nÅéºŞ½u (Middleware Pipeline)
+            #region ä¸­ä»‹è»Ÿé«”ç®¡ç·š (Middleware Pipeline)
             if (!app.Environment.IsDevelopment())
             {
-                // «D¶}µoÀô¹Ò¨Ï¥Î¿ù»~³B²z­¶­±»P HSTS
+                // éé–‹ç™¼ç’°å¢ƒä½¿ç”¨éŒ¯èª¤è™•ç†é é¢èˆ‡ HSTS
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
             else
             {
-                // ¶}µoÀô¹Ò±Ò¥Î Swagger UI
+                // é–‹ç™¼ç’°å¢ƒå•Ÿç”¨ Swagger UI
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "MoneyMinder API V1");
-                    c.RoutePrefix = "swagger";    // ¡ö ³o¦æÅı Swagger UI ±¾¨ì /swagger
+                    c.RoutePrefix = "swagger";    // â† é€™è¡Œè®“ Swagger UI æ›åˆ° /swagger
                 });
             }
 
-            // ±j¨î HTTPS
+            // å¼·åˆ¶ HTTPS
             app.UseHttpsRedirection();
 
-            // ³]©wÀRºAÀÉ®×ªA°È
+            // è¨­å®šéœæ…‹æª”æ¡ˆæœå‹™
             app.UseStaticFiles();
 
-            // ±Ò¥Î¸ô¥Ñ
+            // å•Ÿç”¨è·¯ç”±
             app.UseRouting();
 
-            // ±ÂÅv (Authorization)
+            // æˆæ¬Š (Authorization)
             app.UseAuthorization();
 
-            // ³]©w¹w³]¸ô¥Ñ
+            // è¨­å®šé è¨­è·¯ç”±
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             #endregion
 
-            // °õ¦æÀ³¥Îµ{¦¡
+            // åŸ·è¡Œæ‡‰ç”¨ç¨‹å¼
             app.Run();
         }
     }
