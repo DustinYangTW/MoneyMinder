@@ -7,14 +7,17 @@ namespace MoneyMinder.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly MoneyMinder.Services.ILogService _logService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, MoneyMinder.Services.ILogService logService)
         {
             _logger = logger;
+            _logService = logService;
         }
 
         public IActionResult Index()
         {
+            _logService.LogInfo("Index action executed");
             return View();
         }
 
