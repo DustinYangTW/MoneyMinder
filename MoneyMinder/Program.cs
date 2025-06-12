@@ -7,10 +7,10 @@ namespace MoneyMinder
     {
         public static void Main(string[] args)
         {
-            // Register custom services
-            builder.Services.AddTransient<MoneyMinder.Services.ILogService, MoneyMinder.Services.LogService>();
             // 建立 WebApplicationBuilder
             var builder = WebApplication.CreateBuilder(args);
+            // Register custom services
+            builder.Services.AddTransient<MoneyMinder.Services.ILogService, MoneyMinder.Services.LogService>();
 
             #region 新增Logging使用方式
             //-------------------------新增Logging註冊方式---------------------------

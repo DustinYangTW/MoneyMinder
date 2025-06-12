@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using DailyFileLogger.Core;
+using QueueLibrary.Core;
 
 namespace DailyFileLogger.Providers
 {
@@ -10,6 +11,7 @@ namespace DailyFileLogger.Providers
     public class DailyFileLoggerProvider : ILoggerProvider
     {
         private readonly IHostEnvironment _env;
+        private readonly OperationQueue _queue = new();
 
         public DailyFileLoggerProvider(IHostEnvironment env)
         {
@@ -17,11 +19,11 @@ namespace DailyFileLogger.Providers
         }
 
         public ILogger CreateLogger(string categoryName)
-            => new DailyFileLoggers(categoryName, _env);
+            => new DailyFileLoggers(categoryName, _env, _queue);
 
         public void Dispose()
         {
-            // 沒有要釋放的資源
+            _queue.DisposeAsync().AsTask().GetAwaiter().GetResult();
         }
     }
 }
